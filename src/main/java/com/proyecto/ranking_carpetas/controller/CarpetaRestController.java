@@ -1,0 +1,76 @@
+package com.proyecto.ranking_carpetas.controller;
+
+import com.proyecto.ranking_carpetas.model.CarpetaRegistro;
+import com.proyecto.ranking_carpetas.repository.CarpetaRepository;
+import com.proyecto.ranking_carpetas.service.ZipService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/carpetas")
+public class CarpetaRestController {
+
+    private final ZipService zipService;
+    private final CarpetaRepository carpetaRepository;
+
+    public CarpetaRestController(ZipService zipService, CarpetaRepository carpetaRepository) {
+        this.zipService = zipService;
+        this.carpetaRepository = carpetaRepository;
+    }
+
+    // 1. CREATE: POST /api/carpetas
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<?> subirYAnalizar(@RequestParam("archivo") MultipartFile archivo) {
+        if (archivo == null || archivo.isEmpty()) {
+            return ResponseEntity.badRequest().body("Debe enviar un archivo válido.");
+        }
+
+        String nombre = archivo.getOriginalFilename();
+        if (nombre == null || !nombre.toLowerCase().endsWith(".zip")) {
+            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                    .body("Formato no admitido. Debe enviar un archivo con extensión .zip");
+        }
+
+        try {
+            CarpetaRegistro nuevo = zipService.procesarYGuardar(archivo);
+            return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al procesar el archivo ZIP: " + e.getMessage());
+        }
+    }
+
+    // 2. READ (Ranking Top 10): GET /api/carpetas/ranking
+    @GetMapping("/ranking")
+    public ResponseEntity<List<CarpetaRegistro>> obtenerRanking() {
+        return ResponseEntity.ok(carpetaRepository.findTop10ByOrderByTotalArchivosDesc());
+    }
+
+    // 3. READ (Todos): GET /api/carpetas
+    @GetMapping
+    public ResponseEntity<List<CarpetaRegistro>> listarTodos() {
+        return ResponseEntity.ok(carpetaRepository.findAllByOrderByTotalArchivosDesc());
+    }
+
+    // 4. READ (Uno solo por ID): GET /api/carpetas/{id}
+    @GetMapping("/{id}")
+    public ResponseEntity<CarpetaRegistro> obtenerPorId(@PathVariable Long id) {
+        return carpetaRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // 5. DELETE: DELETE /api/carpetas/{id}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarRegistro(@PathVariable Long id) {
+        if (!carpetaRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        carpetaRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+}

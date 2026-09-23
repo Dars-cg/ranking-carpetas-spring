@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking de Carpetas | Spring Boot</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Encabezado -->
+    <header>
+        <h1>📁 Ranking de Carpetas</h1>
+        <p>Sube un archivo comprimido (.zip) para contar sus archivos y registrarlo en el ranking.</p>
+    </header>
+
+    <!-- Alertas con Thymeleaf -->
+    <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <!-- Formulario de subida -->
+    <section class="card">
+        <h2 class="card-title">Subir nueva carpeta comprimida</h2>
+        <form th:action="@{/subir}" method="post" enctype="multipart/form-data" class="form-row">
+            <input type="file" name="archivo" accept=".zip" required>
+            <button type="submit">Analizar ZIP</button>
+        </form>
+    </section>
+
+    <!-- Tabla de Ranking -->
+    <section class="card">
+        <h2 class="card-title">🏆 Top Carpetas con Más Archivos</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 15%;">Puesto</th>
+                        <th style="width: 45%;">Nombre de la Carpeta</th>
+                        <th class="text-center" style="width: 20%;">Total Archivos</th>
+                        <th class="text-center" style="width: 20%;">Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(ranking)}">
+                        <td colspan="4" class="empty-row">No hay carpetas analizadas aún. ¡Sube la primera!</td>
+                    </tr>
+
+                    <tr th:each="item, iter : ${ranking}">
+                        <td class="text-center">
+                            <span th:if="${iter.count == 1}" class="pos-1">🥇 1°</span>
+                            <span th:if="${iter.count == 2}" class="pos-2">🥈 2°</span>
+                            <span th:if="${iter.count == 3}" class="pos-3">🥉 3°</span>
+                            <span th:if="${iter.count > 3}" th:text="${iter.count + '°'}"></span>
+                        </td>
+                        <td style="font-weight: 500;" th:text="${item.nombre}"></td>
+                        <td class="text-center">
+                            <span class="badge badge-count" th:text="${item.totalArchivos + ' archivos'}"></span>
+                        </td>
+                        <td class="text-center date-col" th:text="${#temporals.format(item.fechaRegistro, 'dd/MM/yyyy HH:mm')}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
+
+</body>
+</html>
