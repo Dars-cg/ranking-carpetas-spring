@@ -21,11 +21,9 @@ public class ZipService {
     public CarpetaRegistro procesarYGuardar(MultipartFile archivo) throws IOException {
         int contadorArchivos = 0;
 
-        // Leemos el archivo en memoria por streaming usando ZipInputStream
         try (ZipInputStream zis = new ZipInputStream(archivo.getInputStream())) {
             ZipEntry entrada;
             while ((entrada = zis.getNextEntry()) != null) {
-                // Solo cuenta si no es un directorio
                 if (!entrada.isDirectory()) {
                     contadorArchivos++;
                 }
@@ -33,13 +31,11 @@ public class ZipService {
             }
         }
 
-        // Limpiamos el nombre del archivo (ej. "tareas.zip" -> "tareas")
         String nombreOriginal = archivo.getOriginalFilename();
         String nombreCarpeta = (nombreOriginal != null && nombreOriginal.endsWith(".zip"))
                 ? nombreOriginal.substring(0, nombreOriginal.lastIndexOf('.'))
                 : nombreOriginal;
 
-        // Instanciamos el registro con la fecha actual y lo persistimos
         CarpetaRegistro nuevoRegistro = new CarpetaRegistro(
                 nombreCarpeta,
                 contadorArchivos,

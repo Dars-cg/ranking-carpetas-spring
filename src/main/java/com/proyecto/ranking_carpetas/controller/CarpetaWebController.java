@@ -22,14 +22,12 @@ public class CarpetaWebController {
         this.carpetaRepository = carpetaRepository;
     }
 
-    // Carga la página principal con el ranking
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("ranking", carpetaRepository.findTop10ByOrderByTotalArchivosDesc());
         return "index";
     }
 
-    // Procesa el formulario web y recarga la vista
     @PostMapping("/subir")
     public String procesarDesdeWeb(@RequestParam("archivo") MultipartFile archivo, 
                                    RedirectAttributes redirectAttributes) {

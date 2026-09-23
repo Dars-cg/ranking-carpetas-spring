@@ -22,7 +22,6 @@ public class CarpetaRestController {
         this.carpetaRepository = carpetaRepository;
     }
 
-    // 1. CREATE: POST /api/carpetas
     @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<?> subirYAnalizar(@RequestParam("archivo") MultipartFile archivo) {
         if (archivo == null || archivo.isEmpty()) {
@@ -44,19 +43,16 @@ public class CarpetaRestController {
         }
     }
 
-    // 2. READ (Ranking Top 10): GET /api/carpetas/ranking
     @GetMapping("/ranking")
     public ResponseEntity<List<CarpetaRegistro>> obtenerRanking() {
         return ResponseEntity.ok(carpetaRepository.findTop10ByOrderByTotalArchivosDesc());
     }
 
-    // 3. READ (Todos): GET /api/carpetas
     @GetMapping
     public ResponseEntity<List<CarpetaRegistro>> listarTodos() {
         return ResponseEntity.ok(carpetaRepository.findAllByOrderByTotalArchivosDesc());
     }
 
-    // 4. READ (Uno solo por ID): GET /api/carpetas/{id}
     @GetMapping("/{id}")
     public ResponseEntity<CarpetaRegistro> obtenerPorId(@PathVariable Long id) {
         return carpetaRepository.findById(id)
@@ -74,7 +70,6 @@ public class CarpetaRestController {
         return ResponseEntity.noContent().build();
     }
 
-    // 6. UPDATE: PUT /api/carpetas/{id}
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizarNombre(@PathVariable Long id, @RequestBody Map<String, String> body) {
         String nuevoNombre = body.get("nombre");

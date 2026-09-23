@@ -25,18 +25,15 @@ public class CarpetaRegistro {
     @Column(nullable = false)
     private LocalDateTime fechaRegistro;
 
-    // Constructor vacío requerido por JPA
     public CarpetaRegistro() {
     }
 
-    // Constructor de conveniencia
     public CarpetaRegistro(String nombre, int totalArchivos, LocalDateTime fechaRegistro) {
         this.nombre = nombre;
         this.totalArchivos = totalArchivos;
         this.fechaRegistro = fechaRegistro;
     }
 
-    // Getters y Setters
     public Long getId() {
         return id;
     }

@@ -10,17 +10,14 @@
 
 <div class="container">
 
-    <!-- Encabezado -->
     <header>
         <h1>📁 Ranking de Carpetas</h1>
         <p>Sube un archivo comprimido (.zip) para contar sus archivos y registrarlo en el ranking.</p>
     </header>
 
-    <!-- Alertas con Thymeleaf -->
     <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
     <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
 
-    <!-- Formulario de subida -->
     <section class="card">
         <h2 class="card-title">Subir nueva carpeta comprimida</h2>
         <form th:action="@{/subir}" method="post" enctype="multipart/form-data" class="form-row">
@@ -29,7 +26,6 @@
         </form>
     </section>
 
-    <!-- Tabla de Ranking -->
     <section class="card">
         <h2 class="card-title">🏆 Top Carpetas con Más Archivos</h2>
         <div class="table-container">

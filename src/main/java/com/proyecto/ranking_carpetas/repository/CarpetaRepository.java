@@ -10,9 +10,7 @@ import java.util.List;
 @Repository
 public interface CarpetaRepository extends JpaRepository<CarpetaRegistro, Long> {
 
-    // Spring crea el SQL: SELECT * FROM carpetas_ranking ORDER BY total_archivos DESC LIMIT 10;
     List<CarpetaRegistro> findTop10ByOrderByTotalArchivosDesc();
 
-    // Consulta todo el ranking completo ordenado
     List<CarpetaRegistro> findAllByOrderByTotalArchivosDesc();
 }
