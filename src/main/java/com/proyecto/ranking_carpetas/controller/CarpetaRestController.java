@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-
+import java.util.Map;
 @RestController
 @RequestMapping("/api/carpetas")
 public class CarpetaRestController {
@@ -72,5 +72,23 @@ public class CarpetaRestController {
         }
         carpetaRepository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // 6. UPDATE: PUT /api/carpetas/{id}
+    @PutMapping("/{id}")
+    public ResponseEntity<?> actualizarNombre(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        String nuevoNombre = body.get("nombre");
+
+        if (nuevoNombre == null || nuevoNombre.isBlank()) {
+            return ResponseEntity.badRequest().body("El campo 'nombre' es obligatorio.");
+        }
+
+        return carpetaRepository.findById(id)
+                .map(registroExistente -> {
+                    registroExistente.setNombre(nuevoNombre);
+                    CarpetaRegistro actualizado = carpetaRepository.save(registroExistente);
+                    return ResponseEntity.ok(actualizado);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 }
